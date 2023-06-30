@@ -13,8 +13,12 @@ const client = new Client();
 
 client.on('qr', (qr) => {
     
-    app.get('/qr', (req, res) => {
-        res.send(qr);
+    app.get('/qr',async (req, res) => {
+        try {
+            await res.send(qr);   
+        } catch (error) {
+            console.log('qr: ' + error)
+        }        
     });
 });
 
@@ -22,16 +26,21 @@ client.on('ready', () => {
     console.log('Client is ready!');
 
     app.post('/send', async (req, res) => {
-        const { phone, message } = req.body;
-        const chatId = `${phone}@c.us`;
-
-        console.log({ chatId: chatId, message: message });
-
-        client.sendMessage(chatId, message).then(() => {
-            res.json({ success: 'Message sent successfully' });
-        }).catch((error) => {
-            res.json({ errorp: 'Error sending message' + error });
-        });
+        try {
+            const { phone, message } = req.body;
+            const chatId = `${phone}@c.us`;       
+    
+            client.sendMessage(chatId, message).then(() => {
+                res.json({ success: 'Message sent successfully' });
+            }).catch((error) => {
+                res.json({ errorp: 'Error sending message' + error });
+            });
+    
+            await console.log({ chatId: chatId, message: message });
+        } catch (error) {
+            console.log('envio: ' + error)
+        }
+      
     });
 });
 

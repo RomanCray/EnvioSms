@@ -16,24 +16,43 @@ var port = 4000;
 app.use(bodyParser.json());
 var client = new Client();
 client.on('qr', function (qr) {
-  app.get('/qr', function (req, res) {
-    res.send(qr);
-  });
+  app.get('/qr', /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return res.send(qr);
+          case 3:
+            _context.next = 8;
+            break;
+          case 5:
+            _context.prev = 5;
+            _context.t0 = _context["catch"](0);
+            console.log('qr: ' + _context.t0);
+          case 8:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[0, 5]]);
+    }));
+    return function (_x, _x2) {
+      return _ref.apply(this, arguments);
+    };
+  }());
 });
 client.on('ready', function () {
   console.log('Client is ready!');
   app.post('/send', /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(req, res) {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(req, res) {
       var _req$body, phone, message, chatId;
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
           case 0:
+            _context2.prev = 0;
             _req$body = req.body, phone = _req$body.phone, message = _req$body.message;
             chatId = "".concat(phone, "@c.us");
-            console.log({
-              chatId: chatId,
-              message: message
-            });
             client.sendMessage(chatId, message).then(function () {
               res.json({
                 success: 'Message sent successfully'
@@ -43,14 +62,26 @@ client.on('ready', function () {
                 errorp: 'Error sending message' + error
               });
             });
-          case 4:
+            _context2.next = 6;
+            return console.log({
+              chatId: chatId,
+              message: message
+            });
+          case 6:
+            _context2.next = 11;
+            break;
+          case 8:
+            _context2.prev = 8;
+            _context2.t0 = _context2["catch"](0);
+            console.log('envio: ' + _context2.t0);
+          case 11:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
-      }, _callee);
+      }, _callee2, null, [[0, 8]]);
     }));
-    return function (_x, _x2) {
-      return _ref.apply(this, arguments);
+    return function (_x3, _x4) {
+      return _ref2.apply(this, arguments);
     };
   }());
 });
