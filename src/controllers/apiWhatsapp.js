@@ -1,7 +1,7 @@
 import app from "../app";
 import { Client, RemoteAuth } from 'whatsapp-web.js';
-import { MongoStore } from 'wwebjs-mongo';
-import mongoose from 'mongoose';
+// import { MongoStore } from 'wwebjs-mongo';
+// import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 
 console.log('estoy')
