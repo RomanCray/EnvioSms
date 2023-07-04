@@ -12,10 +12,12 @@ const nuevoEliminar = (id) => {
         authStrategy: new LocalAuth({ clientId: "client-${uniqueId}" })
     });
 
+    console.log('lelgo el cliente${id}')
+
     client${id}.on('qr', (qr) => {
-        app.get('/qr${id}', (req, res) => {
-            console.log('llego: cliente-${id}')
+        app.get('/qr${id}', async (req, res) => {            
             res.json({qr:qr});
+            await console.log('llego: cliente-${id}')
         });
     });
 
@@ -24,15 +26,15 @@ const nuevoEliminar = (id) => {
     
         app.post('/send${id}', async (req, res) => {
             const { phone, message } = req.body;
-            const chatId = ""+phone+"@c.us";
-    
-            console.log({ chatId: chatId, message: message });
+            const chatId = ""+phone+"@c.us";            
     
             client${id}.sendMessage(chatId, message).then(() => {
                 res.json({ success: 'Message sent successfully' });
             }).catch((error) => {
                 res.json({ errorp: 'Error sending message' + error });
             });
+
+            await console.log({ chatId: chatId, message: message });
         });
     });
 
