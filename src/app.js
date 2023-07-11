@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 
 // Settings
-app.set("port", 4000);
+app.set("port",4000);
 
 // Middlewares
 app.use(morgan("dev"));

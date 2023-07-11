@@ -24,10 +24,9 @@ const client = new Client();
 client.on('qr', (qr) => {
     // Handle QR code generation and sending
     app.get('/qr', (req, res) => {
-        res.json({qr: qr});        
+        res.json({qr: qr});
     });
 });
-
 // client.on('authenticated', (session) => {
 //     console.log('Authenticated');
 //     // Save session data to the database

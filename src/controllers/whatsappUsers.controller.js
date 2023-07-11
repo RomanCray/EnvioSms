@@ -7,15 +7,15 @@ const nuevoEliminar = (id) => {
     const uniqueId = uuidv4();
     let nuevo = `
 /* ------------------ CLIENTE${id} ------------------*/
-    
+
     export const client${id} = new Client({
         authStrategy: new LocalAuth({ clientId: "client-${uniqueId}" })
     });
 
-    console.log('lelgo el cliente${id}')
+    console.log('cliente${id} Creado')
 
     client${id}.on('qr', (qr) => {
-        app.get('/qr${id}', async (req, res) => {            
+        app.get('/qr${id}', async (req, res) => {
             res.json({qr:qr});
             await console.log('llego: cliente-${id}')
         });
@@ -23,11 +23,11 @@ const nuevoEliminar = (id) => {
 
     client${id}.on('ready', () => {
         console.log('Client${id} is ready!');
-    
+
         app.post('/send${id}', async (req, res) => {
             const { phone, message } = req.body;
-            const chatId = ""+phone+"@c.us";            
-    
+            const chatId = ""+phone+"@c.us";
+
             client${id}.sendMessage(chatId, message).then(() => {
                 res.json({ success: 'Message sent successfully' });
             }).catch((error) => {
@@ -40,7 +40,7 @@ const nuevoEliminar = (id) => {
 
     client${id}.initialize();
     `
-    return {template: nuevo, id: uniqueId};
+    return { template: nuevo, id: uniqueId };
 }
 
 const newUserWhatsapp = (req, res) => {

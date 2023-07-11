@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 export const agregarUser = (rutaArchivo, codigoAgregar) => {
-  const PATH_ROUTES = `${__dirname}\\${rutaArchivo}`;
+  const PATH_ROUTES = `${__dirname}/${rutaArchivo}`;
 
   try {
     const contenido = fs.readFileSync(PATH_ROUTES, 'utf8');
@@ -21,7 +21,6 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
 
   return 'Nuevo User Creado';
 };
-
 
 export const eliminarUser = (rutaArchivo, textoBusqueda, nuevoContenido) => {
 

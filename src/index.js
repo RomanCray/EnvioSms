@@ -1,4 +1,5 @@
-import app from "./app";
+//import app from "./app";
+const app = require("./app").default;
 import {} from './controllers/hojadePrueba';
 // import client from "./controllers/apiWhatsapp";
 
