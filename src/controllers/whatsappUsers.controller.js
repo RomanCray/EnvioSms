@@ -3,8 +3,10 @@ import { agregarUser, eliminarUser, exportarfun } from './plusUserWhatsapp';
 const { v4: uuidv4 } = require('uuid');
 
 
-const nuevoEliminar = (id) => {
-    const uniqueId = uuidv4();
+const nuevoEliminar = (id, unico) => {
+    let uniqueId = '';
+    unico === undefined ? uniqueId = uuidv4() : uniqueId = unico
+
     let nuevo = `
 /* ------------------ CLIENTE${id} ------------------*/
 
@@ -16,8 +18,12 @@ const nuevoEliminar = (id) => {
 
     client${id}.on('qr', (qr) => {
         app.get('/qr${id}', async (req, res) => {
-            res.json({qr:qr});
-            await console.log('llego: cliente-${id}')
+            try {
+                res.json({qr:qr});
+                await console.log('llego: cliente-${id}')
+            } catch (error) {
+                res.json({ errorqr: error.message });
+            }          
         });
     });
 
@@ -25,16 +31,20 @@ const nuevoEliminar = (id) => {
         console.log('Client${id} is ready!');
 
         app.post('/send${id}', async (req, res) => {
-            const { phone, message } = req.body;
-            const chatId = ""+phone+"@c.us";
-
-            client${id}.sendMessage(chatId, message).then(() => {
-                res.json({ success: 'Message sent successfully' });
-            }).catch((error) => {
-                res.json({ errorp: 'Error sending message' + error });
-            });
-
-            await console.log({ chatId: chatId, message: message });
+            try {
+                const { phone, message } = req.body;
+                const chatId = ""+phone+"@c.us";
+    
+                client${id}.sendMessage(chatId, message).then(() => {
+                    res.json({ success: 'Message sent successfully' });
+                }).catch((error) => {
+                    res.json({ errorp: 'Error sending message' + error });
+                });
+    
+                await console.log({ chatId: chatId, message: message });
+            } catch (error) {                
+                res.json({ errorsms: error.message });                
+            }           
         });
     });
 
@@ -45,12 +55,14 @@ const nuevoEliminar = (id) => {
 
 const newUserWhatsapp = (req, res) => {
     try {
-
         const { id } = req.params
-        const nuevo = nuevoEliminar(id);
+        const nuevo = nuevoEliminar(id, undefined);
         const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-        console.log(nuevo.id)
-        res.json({ idUW: nuevo.id })
+        if (respuesta) {
+            res.json({ idUW: nuevo.id, cliente: true })
+        } else {
+            res.json({ idUW: '00-00-00-00', cliente: false })
+        }
     } catch (error) {
         res.status(500);
         res.send(error.message);
@@ -59,10 +71,14 @@ const newUserWhatsapp = (req, res) => {
 
 const eliminarUserWhatsapp = async (req, res) => {
     try {
-        const { user } = req.params
-        const nuevo = nuevoEliminar(user);
-        const respuesta = eliminarUser('hojadePrueba.js', nuevo, '')
-        res.json({ Qr: respuesta })
+        const { user, uniq } = req.params
+        const nuevo = nuevoEliminar(user, uniq);
+        const respuesta = eliminarUser('hojadePrueba.js', '', nuevo.template, nuevo.id)
+        if (respuesta) {
+            res.json({ respuesta: respuesta })
+        } else {
+            res.json({ respuesta: false })
+        }
     } catch (error) {
         res.status(500);
         res.send(error.message);

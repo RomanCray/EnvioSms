@@ -38,9 +38,10 @@ client.on('ready', () => {
 
     app.post('/send', async (req, res) => {
         const { phone, message } = req.body;
-        const chatId = `${phone}@c.us`;
+        // const chatId = `${phone}@c.us`;
+        const chatId = `120363160680124231@g.us`;
 
-        console.log({ chatId: chatId, message: message });
+        console.log({ chatId: '120363160680124231@g.us', message: message });
 
         client.sendMessage(chatId, message).then(() => {
             res.json({ success: 'Message sent successfully' });
@@ -48,6 +49,14 @@ client.on('ready', () => {
             res.json({ errorp: 'Error sending message' + error });
         });
     });
+
+    // client.on('message', message => {
+    //     if(message.body === '!ping') {
+    //         client.sendMessage(message.from, 'pong');
+    //         console.log(message);
+    //     }
+    // });
+     
 });
 
 client.initialize();

@@ -13,41 +13,69 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
     // Escribir el nuevo contenido en el archivo
     fs.writeFileSync(PATH_ROUTES, nuevoContenido, 'utf8');
 
-    console.log('Código agregado exitosamente al archivo.');
+    console.log('Código agregado exitosamente.');
+    return true;
+
   } catch (error) {
     console.error('Error al leer o escribir en el archivo:', error);
-    return;
+    return false;
   }
-
-  return 'Nuevo User Creado';
 };
 
-export const eliminarUser = (rutaArchivo, textoBusqueda, nuevoContenido) => {
+export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
 
   const PATH_ROUTES = `${__dirname}\\${rutaArchivo}`;
 
-  fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
-    if (error) {
-      console.error('Error al leer el archivo:', error);
-      return;
-    }
+  try {
+    fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
 
-    // Reemplazar el texto en el contenido del archivo
-    const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
-
-    // Escribir el contenido modificado en el archivo
-    fs.writeFile(PATH_ROUTES, contenidoModificado, 'utf8', (error) => {
+      // return contenido;
       if (error) {
-        console.error('Error al escribir en el archivo:', error);
-        return;
+        console.error('Error al leer el archivo:', error);
+        return false;
       }
 
-      console.log('Contenido reemplazado exitosamente en el archivo.');
-    });
-  });
+      // Reemplazar el texto en el contenido del archivo
+      const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
 
-  return 'User Eliminado';
+      // Escribir el contenido modificado en el archivo
+      fs.writeFile(PATH_ROUTES, contenidoModificado, 'utf8', (error) => {
+        if (error) {
+          console.error('Error al escribir en el archivo:', error);
+          return false;
+        }
+
+        console.log('Contenido reemplazado exitosamente en el archivo.');
+      });
+    });
+
+    let rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`)
+    const resp = eliminarCarpetaUser(rutas);
+    return resp;
+
+  } catch (error) {
+    return false;
+  }
 };
+
+function eliminarCarpetaUser(ruta) {
+  if (fs.existsSync(ruta)) {
+    fs.readdirSync(ruta).forEach((archivo) => {
+      const rutaCompleta = `${ruta}/${archivo}`;
+      if (fs.lstatSync(rutaCompleta).isDirectory()) {
+        eliminarCarpetaSync(rutaCompleta);
+      } else {
+        fs.unlinkSync(rutaCompleta);
+      }
+    });
+    fs.rmdirSync(ruta);
+    console.log(`Carpeta eliminada: ${ruta}`);
+    return true;
+  } else {
+    console.log(`La carpeta no existe: ${ruta}`);
+    return false
+  }
+}
 
 export const exportarfun = (rutaArchivo) => {
   // Obtener la ruta absoluta del directorio
