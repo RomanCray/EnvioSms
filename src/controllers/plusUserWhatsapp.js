@@ -24,7 +24,7 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
 
 export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
 
-  const PATH_ROUTES = `${__dirname}\\${rutaArchivo}`;
+  const PATH_ROUTES = `${__dirname}/${rutaArchivo}`;
 
   try {
     fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
@@ -59,8 +59,8 @@ export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) =
 };
 
 function eliminarCarpetaUser(ruta) {
-  if (fs.existsSync(ruta)) {
-    fs.readdirSync(ruta).forEach((archivo) => {
+//  if (fs.existsSync(ruta)) {
+    fs.readdirSync(ruta,{ withFileTypes: true }).forEach((archivo) => {
       const rutaCompleta = `${ruta}/${archivo}`;
       if (fs.lstatSync(rutaCompleta).isDirectory()) {
         eliminarCarpetaSync(rutaCompleta);
@@ -71,10 +71,10 @@ function eliminarCarpetaUser(ruta) {
     fs.rmdirSync(ruta);
     console.log(`Carpeta eliminada: ${ruta}`);
     return true;
-  } else {
-    console.log(`La carpeta no existe: ${ruta}`);
-    return false
-  }
+  //} else {
+    //console.log(`La carpeta no existe: ${ruta}`);
+    //return false
+  //}
 }
 
 export const exportarfun = (rutaArchivo) => {
