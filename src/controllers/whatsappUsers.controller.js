@@ -53,9 +53,11 @@ const nuevoEliminar = (id, unico) => {
     });
 
     client${id}.on('message', message => {
-        if(message.body === '!ping') {
+        if(message.body === '!Intelho') {
             client${id}.sendMessage(message.from, 'pong');
-            console.log(message)
+            const grup = message.id.remote
+            const numbers = str.match(/\d+/g);
+            console.log(numbers)
         }
     });
      
