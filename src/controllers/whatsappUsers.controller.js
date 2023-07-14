@@ -52,9 +52,9 @@ const nuevoEliminar = (id, unico) => {
         });
     });
 
-    client.on('message', message => {
+    client${id}.on('message', message => {
         if(message.body === '!ping') {
-            client.sendMessage(message.from, 'pong');
+            client${id}.sendMessage(message.from, 'pong');
             console.log(message)
         }
     });
