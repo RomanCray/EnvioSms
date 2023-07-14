@@ -27,7 +27,11 @@ import { Client, LocalAuth ,RemoteAuth } from 'whatsapp-web.js';
         app.post('/send1', async (req, res) => {
             try {
                 const { phone, message } = req.body;
-                const chatId = ""+phone+"@c.us";
+                let chatId = "";
+                phone.length > 12 ?
+                chatId = ""+phone+"@g.us"
+                :
+                chatId = ""+phone+"@c.us"
     
                 client1.sendMessage(chatId, message).then(() => {
                     res.json({ success: 'Message sent successfully' });
@@ -71,7 +75,11 @@ import { Client, LocalAuth ,RemoteAuth } from 'whatsapp-web.js';
         app.post('/send2', async (req, res) => {
             try {
                 const { phone, message } = req.body;
-                const chatId = ""+phone+"@c.us";
+                let chatId = "";
+                phone.length > 12 ?
+                chatId = ""+phone+"@g.us"
+                :
+                chatId = ""+phone+"@c.us"
     
                 client2.sendMessage(chatId, message).then(() => {
                     res.json({ success: 'Message sent successfully' });

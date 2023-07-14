@@ -33,7 +33,11 @@ const nuevoEliminar = (id, unico) => {
         app.post('/send${id}', async (req, res) => {
             try {
                 const { phone, message } = req.body;
-                const chatId = ""+phone+"@c.us";
+                let chatId = "";
+                phone.length > 12 ?
+                chatId = ""+phone+"@g.us"
+                :
+                chatId = ""+phone+"@c.us"
     
                 client${id}.sendMessage(chatId, message).then(() => {
                     res.json({ success: 'Message sent successfully' });
