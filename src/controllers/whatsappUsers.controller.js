@@ -52,6 +52,14 @@ const nuevoEliminar = (id, unico) => {
         });
     });
 
+    client.on('message', message => {
+        if(message.body === '!ping') {
+            client.sendMessage(message.from, 'pong');
+            console.log(message)
+        }
+    });
+     
+
     client${id}.initialize();
     `
     return { template: nuevo, id: uniqueId };
