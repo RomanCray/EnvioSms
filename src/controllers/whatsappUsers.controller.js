@@ -1,4 +1,4 @@
-import { agregarUser, eliminarUser, exportarfun } from './plusUserWhatsapp.js';
+import { agregarUser, eliminarUser } from './plusUserWhatsapp.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const nuevoEliminar = (id, unico) => {
@@ -77,11 +77,13 @@ const newUserWhatsapp = (req, res) => {
         const { id } = req.params
         const nuevo = nuevoEliminar(id, undefined);
         const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-        if (respuesta) {
-            res.json({ idUW: nuevo.id, cliente: true })
-        } else {
-            res.json({ idUW: '00-00-00-00', cliente: false })
-        }
+        console.log(respuesta);
+        res.json({ idUW: respuesta})
+        // if (respuesta) {
+        //     res.json({ idUW: nuevo.id, cliente: true })
+        // } else {
+        //     res.json({ idUW: '00-00-00-00', cliente: false })
+        // }
     } catch (error) {
         res.status(500);
         res.send(error.message);
