@@ -5,11 +5,12 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
 
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
-  const rutaalter = path.join(currentDirectory, rutaArchivo);
-  const PATH_ROUTES = rutaalter.slice(1);
+  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  // const rutaalter = path.join(currentDirectory, rutaArchivo);
+  // const PATH_ROUTES = rutaalter.slice(1);
 
   try {
-    
+
     const contenido = fs.readFileSync(PATH_ROUTES, 'utf8');
 
     // Concatenar el código a agregar al contenido existente
@@ -31,8 +32,9 @@ export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) =
 
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
-  const rutaalter = path.join(currentDirectory, rutaArchivo);
-  const PATH_ROUTES = rutaalter.slice(1);
+  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  // const rutaalter = path.join(currentDirectory, rutaArchivo);
+  // const PATH_ROUTES = rutaalter.slice(1);
 
   try {
     fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {

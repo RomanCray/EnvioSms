@@ -76,14 +76,12 @@ const newUserWhatsapp = (req, res) => {
     try {
         const { id } = req.params
         const nuevo = nuevoEliminar(id, undefined);
-        const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-        console.log(respuesta);
-        res.json({ idUW: respuesta})
-        // if (respuesta) {
-        //     res.json({ idUW: nuevo.id, cliente: true })
-        // } else {
-        //     res.json({ idUW: '00-00-00-00', cliente: false })
-        // }
+        const respuesta = agregarUser('hojadePrueba.js', nuevo.template);        
+        if (respuesta) {
+            res.json({ idUW: nuevo.id, cliente: true })
+        } else {
+            res.json({ idUW: '00-00-00-00', cliente: false })
+        }
     } catch (error) {
         res.status(500);
         res.send(error.message);
