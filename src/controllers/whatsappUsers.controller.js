@@ -1,7 +1,5 @@
-import { methods as apiWhatsap } from './apiWhatsapp'
-import { agregarUser, eliminarUser, exportarfun } from './plusUserWhatsapp';
-const { v4: uuidv4 } = require('uuid');
-
+import { agregarUser, eliminarUser, exportarfun } from './plusUserWhatsapp.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const nuevoEliminar = (id, unico) => {
     let uniqueId = '';
@@ -10,59 +8,66 @@ const nuevoEliminar = (id, unico) => {
     let nuevo = `
 /* ------------------ CLIENTE${id} ------------------*/
 
-    export const client${id} = new Client({
-        authStrategy: new LocalAuth({ clientId: "client-${uniqueId}" })
+export const client${id} = new Client({
+    authStrategy: new LocalAuth({ clientId: "client-${uniqueId}" }),
+    puppeteer: {
+        headless: "new",
+        args: [
+            "--disable-setuid-sandbox",
+            "--unhandled-rejections=strict",
+        ],
+    },
+});
+
+console.log('cliente${id} Creado')
+
+client${id}.on('qr', (qr) => {
+    app.get('/qr${id}', async (req, res) => {
+        try {
+            res.json({qr:qr});
+            await console.log('QR cliente-${id} : ' + qr)
+        } catch (error) {
+            res.json({ errorqr: error.message });
+        }          
     });
+});
 
-    console.log('cliente${id} Creado')
+client${id}.on('ready', () => {
+    console.log('Client${id} Listo..!');
 
-    client${id}.on('qr', (qr) => {
-        app.get('/qr${id}', async (req, res) => {
-            try {
-                res.json({qr:qr});
-                await console.log('llego: cliente-${id}')
-            } catch (error) {
-                res.json({ errorqr: error.message });
-            }          
-        });
+    app.post('/send${id}', async (req, res) => {
+        try {
+            const { phone, message } = req.body;
+            let chatId = "";
+            phone.length > 12 ?
+            chatId = ""+phone+"@g.us"
+            :
+            chatId = ""+phone+"@c.us"
+
+            client${id}.sendMessage(chatId, message).then(() => {
+                res.json({ success: 'Message sent successfully' });
+            }).catch((error) => {
+                res.json({ errorp: 'Error sending message' + error });
+            });
+
+            await console.log({ De: client${id}, Para: chatId, Message: message, Fecha: Date() });
+        } catch (error) {                
+            res.json({ errorsms: error.message });                
+        }           
     });
+});
 
-    client${id}.on('ready', () => {
-        console.log('Client${id} is ready!');
+client${id}.on('message', message => {
+    if(message.body === '!Intelho') {
+        const grup = message.id.remote
+        const numbers = str.match(/\d+/g);
+        client${id}.sendMessage(message.from, 'pong');
+        console.log(numbers)
+    }
+});
+ 
 
-        app.post('/send${id}', async (req, res) => {
-            try {
-                const { phone, message } = req.body;
-                let chatId = "";
-                phone.length > 12 ?
-                chatId = ""+phone+"@g.us"
-                :
-                chatId = ""+phone+"@c.us"
-    
-                client${id}.sendMessage(chatId, message).then(() => {
-                    res.json({ success: 'Message sent successfully' });
-                }).catch((error) => {
-                    res.json({ errorp: 'Error sending message' + error });
-                });
-    
-                await console.log({ chatId: chatId, message: message });
-            } catch (error) {                
-                res.json({ errorsms: error.message });                
-            }           
-        });
-    });
-
-    client${id}.on('message', message => {
-        if(message.body === '!Intelho') {
-            client${id}.sendMessage(message.from, 'pong');
-            const grup = message.id.remote
-            const numbers = str.match(/\d+/g);
-            console.log(numbers)
-        }
-    });
-     
-
-    client${id}.initialize();
+client${id}.initialize();
     `
     return { template: nuevo, id: uniqueId };
 }
@@ -103,3 +108,7 @@ export const methods = {
     newUserWhatsapp,
     eliminarUserWhatsapp
 };
+
+
+
+

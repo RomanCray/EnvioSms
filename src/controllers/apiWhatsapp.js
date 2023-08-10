@@ -1,5 +1,5 @@
 import app from "../app";
-import { Client, RemoteAuth } from 'whatsapp-web.js';
+import { Client, MessageMedia , RemoteAuth } from 'whatsapp-web.js';
 // import { MongoStore } from 'wwebjs-mongo';
 // import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
@@ -40,6 +40,7 @@ client.on('ready', () => {
         const { phone, message } = req.body;
         // const chatId = `${phone}@c.us`;
         const chatId = `120363160680124231@g.us`;
+        // const media = MessageMedia.fromFilePath('./path/to/image.png');
 
         console.log({ chatId: '120363160680124231@g.us', message: message });
 
@@ -61,4 +62,4 @@ client.on('ready', () => {
 
 client.initialize();
 
-// export default client;
+export default client;
