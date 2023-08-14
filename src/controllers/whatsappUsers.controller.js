@@ -3,13 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 const nuevoEliminar = (id, unico) => {
   
-    unico === undefined ? unico = uuidv4() : unico
+    unico === undefined ? unico = id +"" + uuidv4() : unico
 
     let nuevo = `
 /* ------------------ CLIENTE${id} ------------------*/
 
 export const client${id} = new Client({
-    authStrategy: new LocalAuth({ clientId: "client-${id}${unico}" }),
+    authStrategy: new LocalAuth({ clientId: "client-${unico}" }),
     puppeteer: {
         headless: "new",
         args: [
@@ -71,13 +71,13 @@ app.get('/estatus${id}', async (req, res) => {
     try {
         await res.json({
             orginalName: client${id}.info.pushname,
-            phoneUser: client${id}.wid.user,
+            phoneUser: client${id}.info.wid.user,
         });
 
         console.log({
             De: "${unico}",
             orginalName: client${id}.info.pushname,
-            phoneUser: client${id}.wid.user,
+            phoneUser: client${id}.info.wid.user,
             Fecha: Date()
         });
     } catch (error) {
