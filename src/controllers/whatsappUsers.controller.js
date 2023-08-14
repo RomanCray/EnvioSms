@@ -71,13 +71,13 @@ app.get('/estatus${id}', async (req, res) => {
     try {
         await res.json({
             orginalName: client${id}.info.pushname,
-            phoneUser: client${id}.info.pushname,
+            phoneUser: client${id}.wid.user,
         });
 
         console.log({
-            De: "client${id}",
-            orginalName: client${id} .info.pushname,
-            phoneUser: client${id} .info.pushname,
+            De: "${unico}",
+            orginalName: client${id}.info.pushname,
+            phoneUser: client${id}.wid.user,
             Fecha: Date()
         });
     } catch (error) {
