@@ -25,7 +25,8 @@ console.log('cliente${id} Preparado')
 client${id}.on('qr', (qr) => {
     let oldQr = qr;
     app.get('/qr${id}', async (req, res) => {
-        try {            
+        try {      
+            qrcode.generate(oldQr, { small: true });      
             res.json({ qr: oldQr });
             await console.log('QR client${id} : ' + oldQr)
         } catch (error) {
