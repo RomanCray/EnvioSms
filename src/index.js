@@ -1,11 +1,12 @@
-import {} from './controllers/hojadePrueba.js';
+// import {} from './controllers/hojadePrueba.js';
 import app from "./app.js";
 // const app = require("./app").default;    
-// import client from "./controllers/apiWhatsapp";
+import {} from "./controllers/apiWhatsapp.js";
 
 const main = () => {
     app.listen(app.get("port"));
-    console.log(`Server on port ${app.get("port")}`);
+    console.log(`Puerto del servidor: ${app.get("port")} 🔥`);
+    console.log("********** Clientes Listos! **********")
 };
 
 main();

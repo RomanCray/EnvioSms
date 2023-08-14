@@ -19,6 +19,8 @@
 /.wwebjs_auth
 /.wwebjs_cache
 
+/archivos
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

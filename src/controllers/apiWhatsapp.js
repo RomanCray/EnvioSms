@@ -1,65 +1,124 @@
-import app from "../app";
-import { Client, MessageMedia , RemoteAuth } from 'whatsapp-web.js';
-// import { MongoStore } from 'wwebjs-mongo';
-// import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
+import app from "../app.js";
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
+import qrcode from 'qrcode-terminal';
+import { v4 as uuidv4 } from 'uuid';
+
+// import puppeteer from 'puppeteer';
 
 console.log('estoy')
 
-const client = new Client();
-
-// Configure bodyParser to parse JSON
-// app.use(bodyParser.json());
-
-// Require database
-// mongoose.connect('mongodb://127.0.0.1:27017/whatsappApi').then(() => {
-//     const store = new MongoStore({ mongoose: mongoose });
-//     const client = new Client({
-//         authStrategy: new RemoteAuth({
-//             store: store,
-//             backupSyncIntervalMs: 300000
-//         })
-//     });
-
-client.on('qr', (qr) => {
-    // Handle QR code generation and sending
-    app.get('/qr', (req, res) => {
-        res.json({qr: qr});
-    });
-});
-// client.on('authenticated', (session) => {
-//     console.log('Authenticated');
-//     // Save session data to the database
-//     store.save(session);
+/* ----- SOLO FUNCIONA CON LAS ESTARAS LegacySessionAuth Y RemoteAuth  */
+// client2.on('authenticated', session => {
+//     console.log('Authenticated: ',session );    
 // });
 
-client.on('ready', () => {
-    console.log('Client is ready!');
-
-    app.post('/send', async (req, res) => {
-        const { phone, message } = req.body;
-        // const chatId = `${phone}@c.us`;
-        const chatId = `120363160680124231@g.us`;
-        // const media = MessageMedia.fromFilePath('./path/to/image.png');
-
-        console.log({ chatId: '120363160680124231@g.us', message: message });
-
-        client.sendMessage(chatId, message).then(() => {
-            res.json({ success: 'Message sent successfully' });
-        }).catch((error) => {
-            res.json({ errorp: 'Error sending message' + error });
-        });
-    });
-
-    // client.on('message', message => {
-    //     if(message.body === '!ping') {
-    //         client.sendMessage(message.from, 'pong');
-    //         console.log(message);
-    //     }
-    // });
-     
+export const client2 = new Client({
+    authStrategy: new LocalAuth({ clientId: "client2" }),
+    puppeteer: {
+        headless: "new",
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--unhandled-rejections=strict",
+        ],
+    },
 });
 
-client.initialize();
+console.log('* client2 Preparado')
 
-export default client;
+client2.on('qr', (qr) => {
+    let oldQr = qr;
+
+    app.get('/qr2', async (req, res) => {
+        console.log("holi")
+        try {
+            qrcode.generate(oldQr, { small: true });
+            res.json({ qr: oldQr });
+            await console.log('QR client2 : ' + oldQr)
+        } catch (error) {
+            res.status(500);
+            res.json({ errorqr: error.message });
+        }
+    });
+});
+
+client2.on('ready', () => {
+    console.log('client2 Listo..!');
+
+    app.post('/send2', async (req, res) => {
+        try {
+            const { phone, message } = req.body;
+            let chatId = "";
+            phone.length > 12 ?
+                chatId = "" + phone + "@g.us"
+                :
+                chatId = "" + phone + "@c.us"
+
+            await client2.sendMessage(chatId, message)
+                .then(() => {
+                    res.json({ success: 'Message sent successfully' });
+                })
+                .catch((error) => {
+                    res.json({ errorp: 'Error sending message' + error });
+                });
+
+            console.log({
+                De: "client2",
+                Para: chatId,
+                Message: message,
+                Fecha: Date()
+            });
+        } catch (error) {
+            res.status(500);
+            res.json({ errorsms: error.message });
+        }
+    });
+});
+
+app.get('/estatus2', async (req, res) => {
+    try {
+        await res.json({
+            orginalName: client2.info.pushname,
+            phoneUser: client2.info.wid.user,
+        });
+
+        console.log({
+            De: "client2",
+            orginalName: client2.info.pushname,
+            phoneUser: client2.info.wid.user,
+            Fecha: Date()
+        });
+    } catch (error) {
+        res.status(500);
+        res.json({ errorsms: error.message });
+    }
+});
+
+app.get('/closeChromiun', async (req, res) => {
+    try {
+        await puppeteer.browser.close();        
+    } catch (error) {
+        res.status(500);
+        res.json({ errorsms: error.message });
+    }
+});
+
+client2.on('message', message => {
+    if (message.body === 'pong') {
+        client.sendMessage(message.from, 'pong');
+        // const grup = message.id.remote
+        // const numbers = str.match(/\d+/g);
+        // console.log(numbers)
+    }
+});
+
+
+client2.on('disconnected', (reason) => {
+    console.log('client2 desconectado desde: ', reason);
+});
+
+
+client2.initialize();
+
+// export default client2;
