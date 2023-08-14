@@ -113,6 +113,7 @@ const newUserWhatsapp = (req, res) => {
         if (respuesta) {
             res.json({ idUW: nuevo.id, cliente: true })
         } else {
+            res.status(500);
             res.json({ idUW: '00-00-00-00', cliente: false })
         }
     } catch (error) {
@@ -129,6 +130,7 @@ const eliminarUserWhatsapp = async (req, res) => {
         if (respuesta) {
             res.json({ respuesta: respuesta })
         } else {
+            res.status(500);
             res.json({ respuesta: false })
         }
     } catch (error) {
