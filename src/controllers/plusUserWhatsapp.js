@@ -142,9 +142,15 @@ export const listUsers = (rutaArchivo) => {
         console.error('Error al leer el archivo:', err);
         reject(err);
       } else {
-        const lines = data.trim().split('\n');
-        const numbersArray = lines.map(line => parseInt(line)); 
-        resolve(numbersArray);
+        console.log("soy la data ***********   : ",data)
+        if (!data.trim()) {          
+          console.log('El archivo está vacío o contiene solo espacios en blanco.');  
+          resolve([null]);        
+        } else {
+          const lines = data.trim().split('\n');
+          const numbersArray = lines.map(line => parseInt(line));
+          resolve(numbersArray);
+        }
       }
     });
   });
@@ -155,9 +161,9 @@ const rutaControllers = (rutaArchivo) => {
 
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
-  // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  const rutaalter = path.join(currentDirectory, rutaArchivo);
-  const PATH_ROUTES = rutaalter.slice(1);
+  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  // const rutaalter = path.join(currentDirectory, rutaArchivo);
+  // const PATH_ROUTES = rutaalter.slice(1);
 
   return PATH_ROUTES;
 }

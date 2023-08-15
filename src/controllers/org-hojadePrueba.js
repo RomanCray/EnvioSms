@@ -3,4 +3,4 @@ import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 
-console.log("********** Clientes Creados **********")
+console.log("\n********** Clientes Creados **********")

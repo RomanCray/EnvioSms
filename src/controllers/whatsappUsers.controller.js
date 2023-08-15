@@ -92,9 +92,9 @@ app.get('/estatus${id}', async (req, res) => {
 
 app.get('/cerrar${id}', async (req, res) => {
     try {
-        await client${id}.pupBrowser.close();
-        console.log('client${id}')
-        res.json({ resp: 'cerrado' });
+        client${id}.pupBrowser.close();
+        await res.json({ resp: 'cerrado' });
+        console.log('-------- client${id} Cerrado --------')                
     } catch (error) {
         res.json({ errorsms: error.message });
     }
@@ -125,36 +125,36 @@ const newUserWhatsapp = (req, res) => {
         const { id } = req.params
         const nuevo = nuevoEliminar(id, undefined);
 
-        captureUsers('client.txt', id)
-            .then(result => {
-                console.log(result)
-                listUsers('client.txt')
-                    .then(users => {
-
-                        if (users.length > 1) {
-                            console.log("estra mismo")
-                            const mismo = users
-                            mismo.pop()
-                            console.log(mismo)
-                            cerrarBrousers(mismo)
-                        }
-
-                        const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-                        if (respuesta) {
-                            res.json({ idUW: nuevo.id, cliente: true })
-                        } else {
-                            res.status(500);
-                            res.json({ idUW: '00-00-00-00', cliente: false })
+        listUsers('client.txt')
+            .then(users => {
+                console.log(users)
+                if (users.length >= 1 && users[0] != null && users[0] != undefined) {
+                    const mismo = users
+                    console.log("estra para cerrar " + users[0])
+                    console.log(mismo)
+                    cerrarBrousers(mismo)
+                }
+                captureUsers('client.txt', id)
+                    .then(result => {
+                        console.log(result)
+                        if (result) {
+                            const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
+                            if (respuesta) {
+                                res.json({ idUW: nuevo.id, cliente: true })
+                            } else {
+                                res.status(500);
+                                res.json({ idUW: '00-00-00-00', cliente: false })
+                            }
                         }
                     })
                     .catch(error => {
                         console.error(error);
+                        res.json({ errorsms: error })
                     });
             })
             .catch(error => {
                 console.error(error);
-                res.json({ errorsms: error })
-            });        
+            });
 
     } catch (error) {
         res.status(500);
@@ -164,18 +164,21 @@ const newUserWhatsapp = (req, res) => {
 
 const cerrarBrousers = newUser => {
     console.log(newUser)
-    const users = newUser.map(async user => {        
-        console.log(`http://localhost:4000/cerrar${user}`)
+    const users = newUser.map(async user => {
 
-        fetch(`http://localhost:4000/cerrar${user}`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data); // Datos recibidos de la respuesta
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+        console.log(`https://myapiwhatsapp.ddns.net/cerrar${user}`)
+        // console.log(`http://localhost:4000/cerrar${user}`)
+
+        fetch(`https://myapiwhatsapp.ddns.net/cerrar${user}`)
+        // fetch(`http://localhost:4000/cerrar${user}`)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch((error) => {
+                console.error(error);
+            });
     });
+
+    console.log(users)
 }
 
 const eliminarUserWhatsapp = async (req, res) => {
