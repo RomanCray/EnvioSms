@@ -1,13 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util';
 
 export const agregarUser = (rutaArchivo, codigoAgregar) => {
 
-  const currentModulePath = new URL(import.meta.url).pathname;
-  const currentDirectory = path.dirname(currentModulePath);
-  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  // const rutaalter = path.join(currentDirectory, rutaArchivo);
-  // const PATH_ROUTES = rutaalter.slice(1);
+  const PATH_ROUTES = rutaControllers(rutaArchivo);
 
   try {
 
@@ -28,56 +25,139 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
   }
 };
 
-export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
+// export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
 
-  const currentModulePath = new URL(import.meta.url).pathname;
-  const currentDirectory = path.dirname(currentModulePath);
-  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  // const rutaalter = path.join(currentDirectory, rutaArchivo);
-  // const PATH_ROUTES = rutaalter.slice(1);
+//   const currentModulePath = new URL(import.meta.url).pathname;
+//   const currentDirectory = path.dirname(currentModulePath);
+//   // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+//   const rutaalter = path.join(currentDirectory, rutaArchivo);
+//   const PATH_ROUTES = rutaalter.slice(1);
+//   let very = false
+
+//   try {
+//     fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
+
+//       if (error) {
+//         console.error('Error al leer el archivo:', error);
+//         return false;
+//       }
+
+//       // Reemplazar el texto en el contenido del archivo
+//       const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
+
+//       // Escribir el contenido modificado en el archivo
+//       fs.writeFile(PATH_ROUTES, contenidoModificado, 'utf8', (error) => {
+//         if (error) {
+//           console.error('Error al eliminar el archivo:', error);
+//           return false;
+//         }
+
+//         console.log('Contenido elimnado exitosamente en el archivo.\n');
+//       });
+
+//       very = true;
+//     });
+
+//     if (very) {
+//       const rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`)
+//       const resp = eliminarCarpetaUser(rutas);
+//       return resp;
+//     } else {
+//       return very;
+//     }
+
+//   } catch (error) {
+//     return false;
+//   }
+// };
+
+export const eliminarUser = async (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
+  const PATH_ROUTES = rutaControllers(rutaArchivo);
 
   try {
-    fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
+    const contenido = await promisify(fs.readFile)(PATH_ROUTES, 'utf8');
 
-      if (error) {
-        console.error('Error al leer el archivo:', error);
-        return false;
-      }
+    const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
 
-      // Reemplazar el texto en el contenido del archivo
-      const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
+    await promisify(fs.writeFile)(PATH_ROUTES, contenidoModificado, 'utf8');
+    console.log('Contenido eliminado exitosamente del archivo.\n');
 
-      // Escribir el contenido modificado en el archivo
-      fs.writeFile(PATH_ROUTES, contenidoModificado, 'utf8', (error) => {
-        if (error) {
-          console.error('Error al escribir en el archivo:', error);
-          return false;
-        }
+    const rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`);
 
-        console.log('Contenido reemplazado exitosamente en el archivo.');
-      });
-    });
+    let resp = false
+    setTimeout(() => {
+      resp = eliminarCarpetaUser(rutas);
+    }, 3000); // 3000 milisegundos = 3 segundos
 
-    let rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`)
-    const resp = eliminarCarpetaUser(rutas);
-    return resp;
-
+    return true;
   } catch (error) {
+    console.error('Error:', error);
     return false;
   }
 };
 
-function eliminarCarpetaUser(ruta) {
 
-  fs.readdirSync(ruta, { withFileTypes: true }).forEach((archivo) => {
-    const rutaCompleta = `${ruta}/${archivo}`;
-    if (fs.lstatSync(rutaCompleta).isDirectory()) {
-      eliminarCarpetaSync(rutaCompleta);
-    } else {
-      fs.unlinkSync(rutaCompleta);
-    }
+function eliminarCarpetaUser(ruta) {
+  try {
+    fs.readdirSync(ruta, { withFileTypes: true }).forEach((archivo) => {
+      const rutaCompleta = `${ruta}/${archivo.name}`;
+      if (archivo.isDirectory()) {
+        eliminarCarpetaUser(rutaCompleta);
+      } else {
+        fs.unlinkSync(rutaCompleta);
+      }
+    });
+
+    fs.rmdirSync(ruta);
+    console.log(`Carpeta eliminada: ${ruta}`);
+    return true;
+  } catch (error) {
+    console.error(`Error al eliminar la carpeta ${ruta}: ${error.message}`);
+    return false;
+  }
+}
+
+export const captureUsers = (rutaArchivo, user) => {
+  const PATH_ROUTES = rutaControllers(rutaArchivo);
+
+  return new Promise((resolve, reject) => {
+    fs.appendFile(PATH_ROUTES, user + '\n', (err) => {
+      if (err) {
+        console.error('Error al escribir en el archivo:', err);
+        reject(err);
+      } else {
+        console.log('User almacenado con éxito');
+        resolve(true);
+      }
+    });
   });
-  fs.rmdirSync(ruta);
-  console.log(`Carpeta eliminada: ${ruta}`);
-  return true;
+};
+
+export const listUsers = (rutaArchivo) => {
+  const PATH_ROUTES = rutaControllers(rutaArchivo);
+
+  return new Promise((resolve, reject) => {
+    fs.readFile(PATH_ROUTES, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Error al leer el archivo:', err);
+        reject(err);
+      } else {
+        const lines = data.trim().split('\n');
+        const numbersArray = lines.map(line => parseInt(line)); 
+        resolve(numbersArray);
+      }
+    });
+  });
+};
+
+
+const rutaControllers = (rutaArchivo) => {
+
+  const currentModulePath = new URL(import.meta.url).pathname;
+  const currentDirectory = path.dirname(currentModulePath);
+  // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  const rutaalter = path.join(currentDirectory, rutaArchivo);
+  const PATH_ROUTES = rutaalter.slice(1);
+
+  return PATH_ROUTES;
 }
