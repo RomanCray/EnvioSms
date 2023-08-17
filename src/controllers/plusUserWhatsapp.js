@@ -6,9 +6,9 @@ const rutaControllers = (rutaArchivo) => {
 
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
-  // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  const rutaalter = path.join(currentDirectory, rutaArchivo);
-  const PATH_ROUTES = rutaalter.slice(1);
+  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  // const rutaalter = path.join(currentDirectory, rutaArchivo);
+  // const PATH_ROUTES = rutaalter.slice(1);
 
   return PATH_ROUTES;
 }
