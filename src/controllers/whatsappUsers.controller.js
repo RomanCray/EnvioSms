@@ -1,4 +1,4 @@
-import { agregarUser, eliminarUser, captureUsers, listUsers } from './plusUserWhatsapp.js';
+import { agregarUser, eliminarUser, captureUsers, listUsers, eliminarCarpetaUser } from './plusUserWhatsapp.js';
 import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -86,6 +86,7 @@ app.get('/estatus${id}', async (req, res) => {
             Fecha: Date()
         });
     } catch (error) {
+        res.status(500);
         res.json({ errorsms: error.message });
     }
 });
@@ -93,10 +94,11 @@ app.get('/estatus${id}', async (req, res) => {
 app.get('/cerrar${id}', async (req, res) => {
     try {
         client${id}.pupBrowser.close();
-        await res.json({ resp: 'cerrado' });
+        await res.json({ resp: true });
         console.log('-------- client${id} Cerrado --------')                
     } catch (error) {
-        res.json({ errorsms: error.message });
+        res.status(500);
+        res.json({ errorsms: error.message, resp: false });
     }
 });
 
@@ -127,13 +129,6 @@ const newUserWhatsapp = (req, res) => {
 
         listUsers('client.txt')
             .then(users => {
-                console.log(users)
-                if (users.length >= 1 && users[0] != null && users[0] != undefined) {
-                    const mismo = users
-                    console.log("estra para cerrar " + users[0])
-                    console.log(mismo)
-                    cerrarBrousers(mismo)
-                }
                 captureUsers('client.txt', id)
                     .then(result => {
                         console.log(result)
@@ -162,36 +157,36 @@ const newUserWhatsapp = (req, res) => {
     }
 };
 
-const cerrarBrousers = newUser => {
-    console.log(newUser)
-    const users = newUser.map(async user => {
-
-        console.log(`https://myapiwhatsapp.ddns.net/cerrar${user}`)
-        // console.log(`http://localhost:4000/cerrar${user}`)
-
-        fetch(`https://myapiwhatsapp.ddns.net/cerrar${user}`)
-        // fetch(`http://localhost:4000/cerrar${user}`)
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch((error) => {
-                console.error(error);
-            });
-    });
-
-    console.log(users)
-}
-
 const eliminarUserWhatsapp = async (req, res) => {
     try {
         const { user, uniq } = req.params;
         const nuevo = nuevoEliminar(user, uniq);
         const resp = eliminarUser('hojadePrueba.js', '', nuevo.template, nuevo.id);
 
-        if (resp) {
-            res.json({ respuesta: resp });
+        if (resp.result) {
+            console.log({ respuesta: resp.result, ruta: resp.carpeta })
+            res.json({ respuesta: resp.result, ruta: resp.carpeta });
         } else {
             res.status(500);
-            res.json({ respuesta: false });
+            res.json({ respuesta: resp.result });
+        }
+    } catch (error) {
+        res.status(500);
+        res.send(error.message);
+    }
+};
+
+const eliminarCarpetaUserWhatsapp = async (req, res) => {
+    try {
+        const { ruta } = req.params;
+        const resp = eliminarCarpetaUser(ruta);
+
+        if (resp.result) {
+            console.log({ respuesta: resp.result })
+            res.json({ respuesta: true });
+        } else {
+            res.status(500);
+            res.json({ respuesta: resp.result });
         }
     } catch (error) {
         res.status(500);
@@ -201,7 +196,8 @@ const eliminarUserWhatsapp = async (req, res) => {
 
 export const methods = {
     newUserWhatsapp,
-    eliminarUserWhatsapp
+    eliminarUserWhatsapp,
+    eliminarCarpetaUserWhatsapp
 };
 
 

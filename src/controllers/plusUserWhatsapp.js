@@ -2,6 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 
+const rutaControllers = (rutaArchivo) => {
+
+  const currentModulePath = new URL(import.meta.url).pathname;
+  const currentDirectory = path.dirname(currentModulePath);
+  // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  const rutaalter = path.join(currentDirectory, rutaArchivo);
+  const PATH_ROUTES = rutaalter.slice(1);
+
+  return PATH_ROUTES;
+}
+
 export const agregarUser = (rutaArchivo, codigoAgregar) => {
 
   const PATH_ROUTES = rutaControllers(rutaArchivo);
@@ -84,20 +95,14 @@ export const eliminarUser = async (rutaArchivo, nuevoContenido, textoBusqueda, u
 
     const rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`);
 
-    let resp = false
-    setTimeout(() => {
-      resp = eliminarCarpetaUser(rutas);
-    }, 3000); // 3000 milisegundos = 3 segundos
-
-    return true;
+    return ({ result: true, carpeta: rutas });
   } catch (error) {
     console.error('Error:', error);
     return false;
   }
 };
 
-
-function eliminarCarpetaUser(ruta) {
+export function eliminarCarpetaUser(ruta) {
   try {
     fs.readdirSync(ruta, { withFileTypes: true }).forEach((archivo) => {
       const rutaCompleta = `${ruta}/${archivo.name}`;
@@ -110,10 +115,10 @@ function eliminarCarpetaUser(ruta) {
 
     fs.rmdirSync(ruta);
     console.log(`Carpeta eliminada: ${ruta}`);
-    return true;
+    return ({ result: true});
   } catch (error) {
     console.error(`Error al eliminar la carpeta ${ruta}: ${error.message}`);
-    return false;
+    return ({ result: true});
   }
 }
 
@@ -142,10 +147,10 @@ export const listUsers = (rutaArchivo) => {
         console.error('Error al leer el archivo:', err);
         reject(err);
       } else {
-        console.log("soy la data ***********   : ",data)
-        if (!data.trim()) {          
-          console.log('El archivo está vacío o contiene solo espacios en blanco.');  
-          resolve([null]);        
+        console.log("soy la data ***********   : ", data)
+        if (!data.trim()) {
+          console.log('El archivo está vacío o contiene solo espacios en blanco.');
+          resolve([null]);
         } else {
           const lines = data.trim().split('\n');
           const numbersArray = lines.map(line => parseInt(line));
@@ -155,15 +160,3 @@ export const listUsers = (rutaArchivo) => {
     });
   });
 };
-
-
-const rutaControllers = (rutaArchivo) => {
-
-  const currentModulePath = new URL(import.meta.url).pathname;
-  const currentDirectory = path.dirname(currentModulePath);
-  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  // const rutaalter = path.join(currentDirectory, rutaArchivo);
-  // const PATH_ROUTES = rutaalter.slice(1);
-
-  return PATH_ROUTES;
-}
