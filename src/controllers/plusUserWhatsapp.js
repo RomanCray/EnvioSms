@@ -6,9 +6,9 @@ const rutaControllers = (rutaArchivo) => {
 
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
-  const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  // const rutaalter = path.join(currentDirectory, rutaArchivo);
-  // const PATH_ROUTES = rutaalter.slice(1);
+  // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
+  const rutaalter = path.join(currentDirectory, rutaArchivo);
+  const PATH_ROUTES = rutaalter.slice(1);
 
   return PATH_ROUTES;
 }
@@ -98,7 +98,7 @@ export const eliminarUser = async (rutaArchivo, nuevoContenido, textoBusqueda, u
     return ({ result: true, carpeta: rutas });
   } catch (error) {
     console.error('Error:', error);
-    return false;
+    return ({ result: false });
   }
 };
 
@@ -115,10 +115,10 @@ export function eliminarCarpetaUser(ruta) {
 
     fs.rmdirSync(ruta);
     console.log(`Carpeta eliminada: ${ruta}`);
-    return ({ result: true});
+    return ({ result: true });
   } catch (error) {
     console.error(`Error al eliminar la carpeta ${ruta}: ${error.message}`);
-    return ({ result: true});
+    return ({ result: true });
   }
 }
 

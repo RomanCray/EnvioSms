@@ -5,6 +5,6 @@ const router = Router();
 
 router.get("/agregar/:id", whatsappUsersController.newUserWhatsapp);
 router.get("/eliminarUsuario/:user/:uniq", whatsappUsersController.eliminarUserWhatsapp);
-router.get("/eliminarCarpetaUser/:ruta/", whatsappUsersController.eliminarCarpetaUserWhatsapp);
+router.post("/eliminarCarpetaUser", whatsappUsersController.eliminarCarpetaUserWhatsapp);
 
 export default router;

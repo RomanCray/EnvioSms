@@ -28,8 +28,7 @@ console.log('cliente${id} Preparado')
 
 client${id}.on('qr', (qr) => {
     let oldQr = qr;
-    app.get('/qr${id}', async (req, res) => {
-        console.log(client${id})
+    app.get('/qr${id}', async (req, res) => {        
         try {      
             qrcode.generate(oldQr, { small: true });      
             res.json({ qr: oldQr });
@@ -153,7 +152,7 @@ const newUserWhatsapp = (req, res) => {
 
     } catch (error) {
         res.status(500);
-        res.send(error.message);
+        res.send({ respuesta: false, errorRut: error.message });
     }
 };
 
@@ -161,7 +160,7 @@ const eliminarUserWhatsapp = async (req, res) => {
     try {
         const { user, uniq } = req.params;
         const nuevo = nuevoEliminar(user, uniq);
-        const resp = eliminarUser('hojadePrueba.js', '', nuevo.template, nuevo.id);
+        const resp = await eliminarUser('hojadePrueba.js', '', nuevo.template, nuevo.id);
 
         if (resp.result) {
             console.log({ respuesta: resp.result, ruta: resp.carpeta })
@@ -172,14 +171,17 @@ const eliminarUserWhatsapp = async (req, res) => {
         }
     } catch (error) {
         res.status(500);
-        res.send(error.message);
+        res.send({ respuesta: false, errorRut: error.message });
     }
 };
 
 const eliminarCarpetaUserWhatsapp = async (req, res) => {
     try {
-        const { ruta } = req.params;
+        const { ruta } = req.body;
+
         const resp = eliminarCarpetaUser(ruta);
+
+        console.log(resp);
 
         if (resp.result) {
             console.log({ respuesta: resp.result })
@@ -190,7 +192,7 @@ const eliminarCarpetaUserWhatsapp = async (req, res) => {
         }
     } catch (error) {
         res.status(500);
-        res.send(error.message);
+        res.send({ respuesta: false, errorRut: error.message });
     }
 };
 
