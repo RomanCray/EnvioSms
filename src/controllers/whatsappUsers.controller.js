@@ -20,7 +20,11 @@ export const client${id} = new Client({
             "--disable-extensions",
             "--disable-infobars",
             "--disable-session-crashed-bubble"
-        ],
+        ],        
+    },
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2334.12.html',
     },
 });
 
@@ -34,7 +38,8 @@ client${id}.on('qr', (qr) => {
             res.json({ qr: oldQr });
             await console.log('QR client${id} : ' + oldQr)
         } catch (error) {
-            res.json({ errorqr: error.message });
+            res.status(500);
+            res.json({ errorsms: error.message });
         }
     });
 });
@@ -56,7 +61,8 @@ client${id}.on('ready', () => {
                     res.json({ success: 'Message sent successfully' });
                 })
                 .catch((error) => {
-                    res.json({ errorp: 'Error sending message' + error });
+                    res.status(500);
+                    res.json({ errorsms: 'Error sending message' + error });
                 });
 
                 console.log({
@@ -65,7 +71,8 @@ client${id}.on('ready', () => {
                     Message: message,
                     Fecha: Date()
                 });
-        } catch (error) {                
+        } catch (error) {      
+            res.status(500);          
             res.json({ errorsms: error.message });                
         }           
     });
@@ -128,23 +135,37 @@ const newUserWhatsapp = (req, res) => {
 
         listUsers('client.txt')
             .then(users => {
-                captureUsers('client.txt', id)
-                    .then(result => {
-                        console.log(result)
-                        if (result) {
-                            const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-                            if (respuesta) {
-                                res.json({ idUW: nuevo.id, cliente: true })
-                            } else {
-                                res.status(500);
-                                res.json({ idUW: '00-00-00-00', cliente: false })
+
+                if (users.includes(parseInt(id))) {
+                    console.log("EXISTE")
+                    const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
+                    if (respuesta) {
+                        res.json({ idUW: nuevo.id, cliente: true })
+                    } else {
+                        res.status(500);
+                        res.json({ idUW: '00-00-00-00', cliente: false })
+                    }
+                } else {
+                    captureUsers('client.txt', id)
+                        .then(result => {
+                            console.log(result)
+                            if (result) {
+                                console.log("NUEVO")
+                                const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
+                                if (respuesta) {
+                                    res.json({ idUW: nuevo.id, cliente: true })
+                                } else {
+                                    res.status(500);
+                                    res.json({ idUW: '00-00-00-00', cliente: false })
+                                }
                             }
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        res.json({ errorsms: error })
-                    });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            res.json({ errorsms: error })
+                        });
+                }
+
             })
             .catch(error => {
                 console.error(error);
@@ -152,7 +173,7 @@ const newUserWhatsapp = (req, res) => {
 
     } catch (error) {
         res.status(500);
-        res.send({ respuesta: false, errorRut: error.message });
+        res.send({ respuesta: false, errorsms: error.message });
     }
 };
 
@@ -171,7 +192,7 @@ const eliminarUserWhatsapp = async (req, res) => {
         }
     } catch (error) {
         res.status(500);
-        res.send({ respuesta: false, errorRut: error.message });
+        res.send({ respuesta: false, errorsms: error.message });
     }
 };
 
@@ -192,7 +213,7 @@ const eliminarCarpetaUserWhatsapp = async (req, res) => {
         }
     } catch (error) {
         res.status(500);
-        res.send({ respuesta: false, errorRut: error.message });
+        res.send({ respuesta: false, errorsms: error.message });
     }
 };
 

@@ -8,13 +8,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 console.log('estoy')
 
-/* ----- SOLO FUNCIONA CON LAS ESTARAS LegacySessionAuth Y RemoteAuth  */
-// client2.on('authenticated', session => {
-//     console.log('Authenticated: ',session );    
-// });
+// /* ----- SOLO FUNCIONA CON LAS ESTARAS LegacySessionAuth Y RemoteAuth  */
+// // clientprueba2.on('authenticated', session => {
+// //     console.log('Authenticated: ',session );    
+// // });
 
-export const client2 = new Client({
-    authStrategy: new LocalAuth({ clientId: "client2" }),
+export const clientprueba2 = new Client({
+    authStrategy: new LocalAuth({ clientId: "clientprueba2" }),
     puppeteer: {
         headless: "new",
         args: [
@@ -23,11 +23,16 @@ export const client2 = new Client({
             "--unhandled-rejections=strict",
         ],
     },
+    webVersionCache: {
+        type: 'remote',
+        remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2334.12.html',
+    },
+    
 });
 
-console.log('* client2 Preparado')
+console.log('* clientprueba2 Preparado')
 
-client2.on('qr', (qr) => {
+clientprueba2.on('qr', (qr) => {
     let oldQr = qr;
 
     app.get('/qr2', async (req, res) => {
@@ -35,7 +40,7 @@ client2.on('qr', (qr) => {
         try {
             qrcode.generate(oldQr, { small: true });
             res.json({ qr: oldQr });
-            await console.log('QR client2 : ' + oldQr)
+            await console.log('QR clientprueba2 : ' + oldQr)
         } catch (error) {
             res.status(500);
             res.json({ errorqr: error.message });
@@ -43,8 +48,9 @@ client2.on('qr', (qr) => {
     });
 });
 
-client2.on('ready', () => {
-    console.log('client2 Listo..!');
+
+clientprueba2.on('ready', () => {
+    console.log('clientprueba2 Listo..!');
 
     app.post('/send2', async (req, res) => {
         try {
@@ -55,7 +61,7 @@ client2.on('ready', () => {
                 :
                 chatId = "" + phone + "@c.us"
 
-            await client2.sendMessage(chatId, message)
+            await clientprueba2.sendMessage(chatId, message)
                 .then(() => {
                     res.json({ success: 'Message sent successfully' });
                 })
@@ -64,7 +70,7 @@ client2.on('ready', () => {
                 });
 
             console.log({
-                De: "client2",
+                De: "clientprueba2",
                 Para: chatId,
                 Message: message,
                 Fecha: Date()
@@ -79,14 +85,14 @@ client2.on('ready', () => {
 app.get('/estatus2', async (req, res) => {
     try {
         await res.json({
-            orginalName: client2.info.pushname,
-            phoneUser: client2.info.wid.user,
+            orginalName: clientprueba2.info.pushname,
+            phoneUser: clientprueba2.info.wid.user,
         });
 
         console.log({
-            De: "client2",
-            orginalName: client2.info.pushname,
-            phoneUser: client2.info.wid.user,
+            De: "clientprueba2",
+            orginalName: clientprueba2.info.pushname,
+            phoneUser: clientprueba2.info.wid.user,
             Fecha: Date()
         });
     } catch (error) {
@@ -95,16 +101,19 @@ app.get('/estatus2', async (req, res) => {
     }
 });
 
-app.get('/closeChromiun', async (req, res) => {
+
+app.get('/cerrar2', async (req, res) => {
     try {
-        await puppeteer.browser.close();        
+        clientprueba2.pupBrowser.close();
+        await res.json({ resp: true });
+        console.log('-------- clientprueba2 Cerrado --------')                
     } catch (error) {
         res.status(500);
-        res.json({ errorsms: error.message });
+        res.json({ errorsms: error.message, resp: false });
     }
 });
 
-client2.on('message', message => {
+clientprueba2.on('message', message => {
     if (message.body === 'pong') {
         client.sendMessage(message.from, 'pong');
         // const grup = message.id.remote
@@ -114,11 +123,11 @@ client2.on('message', message => {
 });
 
 
-client2.on('disconnected', (reason) => {
-    console.log('client2 desconectado desde: ', reason);
+clientprueba2.on('disconnected', (reason) => {
+    console.log('clientprueba2 desconectado desde: ', reason);
 });
 
 
-client2.initialize();
+clientprueba2.initialize();
 
-// export default client2;
+export default clientprueba2;

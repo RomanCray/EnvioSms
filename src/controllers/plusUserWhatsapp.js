@@ -147,13 +147,17 @@ export const listUsers = (rutaArchivo) => {
         console.error('Error al leer el archivo:', err);
         reject(err);
       } else {
-        console.log("soy la data ***********   : ", data)
+        console.log("*-*-*-*-*-*")
         if (!data.trim()) {
           console.log('El archivo está vacío o contiene solo espacios en blanco.');
           resolve([null]);
         } else {
           const lines = data.trim().split('\n');
-          const numbersArray = lines.map(line => parseInt(line));
+          const numbersArray = lines.map(line => {
+            console.log("* " + line);
+            return parseInt(line); // Debes devolver el resultado de parseInt
+          });
+          console.log("*-*-*-*-*-*")
           resolve(numbersArray);
         }
       }
