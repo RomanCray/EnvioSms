@@ -15,5 +15,11 @@ app.use(express.json());
 
 // Routes
 app.use("/newUser", router);
+app.use(
+    express.Router().get('/', (req, res) => {
+        res.status(200);
+        res.json({ sms: "Api en funcionamiento", respuesta: true });
+    })
+);
 
 export default app;

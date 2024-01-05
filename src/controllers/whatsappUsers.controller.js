@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const nuevoEliminar = (id, unico) => {
 
-    unico === undefined ? unico = id + "" + uuidv4() : unico
+    unico === undefined ? unico = id + "-" + uuidv4() : unico
 
     let nuevo = `
 /* ------------------ CLIENTE${id} ------------------*/
@@ -35,11 +35,11 @@ client${id}.on('qr', (qr) => {
     app.get('/qr${id}', async (req, res) => {        
         try {      
             qrcode.generate(oldQr, { small: true });      
-            res.json({ qr: oldQr });
+            res.json({ result: true, answer: oldQr });
             await console.log('QR client${id} : ' + oldQr)
         } catch (error) {
             res.status(500);
-            res.json({ errorsms: error.message });
+            res.json({ result: false, errorsms: error.message });
         }
     });
 });
@@ -58,11 +58,11 @@ client${id}.on('ready', () => {
 
             await client${id}.sendMessage(chatId, message)
                 .then(() => {
-                    res.json({ success: 'Message sent successfully' });
+                    res.json({ result: true, success: 'Message sent successfully' });
                 })
                 .catch((error) => {
                     res.status(500);
-                    res.json({ errorsms: 'Error sending message' + error });
+                    res.json({ result: false, errorsms: 'Error sending message: ' + error });
                 });
 
                 console.log({
@@ -73,7 +73,7 @@ client${id}.on('ready', () => {
                 });
         } catch (error) {      
             res.status(500);          
-            res.json({ errorsms: error.message });                
+            res.json({ result: false, errorsms: error.message });                
         }           
     });
 });
@@ -81,6 +81,7 @@ client${id}.on('ready', () => {
 app.get('/estatus${id}', async (req, res) => {
     try {
         await res.json({
+            result: true,
             orginalName: client${id}.info.pushname,
             phoneUser: client${id}.info.wid.user,
         });
@@ -93,7 +94,7 @@ app.get('/estatus${id}', async (req, res) => {
         });
     } catch (error) {
         res.status(500);
-        res.json({ errorsms: error.message });
+        res.json({ result: false, errorsms: error.message });
     }
 });
 
