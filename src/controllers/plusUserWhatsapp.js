@@ -7,10 +7,11 @@ const rutaControllers = (rutaArchivo) => {
   const currentModulePath = new URL(import.meta.url).pathname;
   const currentDirectory = path.dirname(currentModulePath);
   const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-  /* ------------------ PRUEBAS ------------------------ 
-  const rutaalter = path.join(currentDirectory, rutaArchivo);
-  const PATH_ROUTES = rutaalter.slice(1);
-  */
+  /* ------------------ PRUEBAS ------------------------ */
+  /*const rutaalter = path.join(currentDirectory, rutaArchivo);
+  const PATH_ROUTES = rutaalter.slice(1);*/
+  /* ------------------ FIN PRUEBAS ------------------------ */
+  
 
   return PATH_ROUTES;
 }
@@ -37,52 +38,6 @@ export const agregarUser = (rutaArchivo, codigoAgregar) => {
     return false;
   }
 };
-
-// export const eliminarUser = (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
-
-//   const currentModulePath = new URL(import.meta.url).pathname;
-//   const currentDirectory = path.dirname(currentModulePath);
-//   // const PATH_ROUTES = path.join(currentDirectory, rutaArchivo);
-//   const rutaalter = path.join(currentDirectory, rutaArchivo);
-//   const PATH_ROUTES = rutaalter.slice(1);
-//   let very = false
-
-//   try {
-//     fs.readFile(PATH_ROUTES, 'utf8', (error, contenido) => {
-
-//       if (error) {
-//         console.error('Error al leer el archivo:', error);
-//         return false;
-//       }
-
-//       // Reemplazar el texto en el contenido del archivo
-//       const contenidoModificado = contenido.replace(textoBusqueda, nuevoContenido);
-
-//       // Escribir el contenido modificado en el archivo
-//       fs.writeFile(PATH_ROUTES, contenidoModificado, 'utf8', (error) => {
-//         if (error) {
-//           console.error('Error al eliminar el archivo:', error);
-//           return false;
-//         }
-
-//         console.log('Contenido elimnado exitosamente en el archivo.\n');
-//       });
-
-//       very = true;
-//     });
-
-//     if (very) {
-//       const rutas = path.join(PATH_ROUTES, '..', '..', '..', '.wwebjs_auth', `session-client-${uniq}`)
-//       const resp = eliminarCarpetaUser(rutas);
-//       return resp;
-//     } else {
-//       return very;
-//     }
-
-//   } catch (error) {
-//     return false;
-//   }
-// };
 
 export const eliminarUser = async (rutaArchivo, nuevoContenido, textoBusqueda, uniq) => {
   const PATH_ROUTES = rutaControllers(rutaArchivo);
@@ -120,7 +75,7 @@ export function eliminarCarpetaUser(ruta) {
     return ({ result: true });
   } catch (error) {
     console.error(`Error al eliminar la carpeta ${ruta}: ${error.message}`);
-    return ({ result: true });
+    return ({ result: false });
   }
 }
 

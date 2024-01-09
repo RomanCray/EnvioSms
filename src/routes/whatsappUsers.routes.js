@@ -4,6 +4,7 @@ import { methods as whatsappUsersController } from "../controllers/whatsappUsers
 const router = Router();
 
 router.get("/agregar/:id", whatsappUsersController.newUserWhatsapp);
+router.get("/consultarclients", whatsappUsersController.consultarclients);
 router.get("/eliminarUsuario/:user/:uniq", whatsappUsersController.eliminarUserWhatsapp);
 router.post("/eliminarCarpetaUser", whatsappUsersController.eliminarCarpetaUserWhatsapp);
 

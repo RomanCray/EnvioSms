@@ -21,6 +21,7 @@
 
 /archivos
 
+.clientes.txt
 .package-lock.json
 
 npm-debug.log*

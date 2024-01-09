@@ -1,4 +1,5 @@
 import { agregarUser, eliminarUser, captureUsers, listUsers, eliminarCarpetaUser } from './plusUserWhatsapp.js';
+import { createClient, listClients } from './client.controllers.js';
 import fetch from 'node-fetch';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -98,11 +99,39 @@ app.get('/estatus${id}', async (req, res) => {
     }
 });
 
-app.get('/cerrar${id}', async (req, res) => {
+app.get('/cerrar${id}/:pausa', async (req, res) => {
     try {
-        client${id}.pupBrowser.close();
-        await res.json({ resp: true });
-        console.log('-------- client${id} Cerrado --------')                
+        await client${id}.pupBrowser.close()
+            .then(() => {
+                const { pausa } = req.params
+                if (pausa == 1 || pausa == '1') {
+                    deleteClient('${unico}').then((deletes) => {
+                        if (deletes.success) {
+                            console.log(deletes.resultCli)
+                            const rutaCarpetaEspecifica = path.join(rutaControllers(), '..', '..', '.wwebjs_auth', 'session-client-${unico}');
+                            const resp = eliminarCarpetaUser(rutaCarpetaEspecifica)
+
+                            if (resp.result) {
+                                const nuevo = whatsappUsersController.nuevoEliminar("${id}", "${unico}");
+                                console.log('-------- client${id} Cerrado --------')
+                                res.json({ result: true, success: 'client${id} Cerrado' });
+                                const other = eliminarUser('hojadePrueba.js', '', nuevo.template, nuevo.id);
+                            } else {
+                                res.status(500);
+                                res.json({ result: false, errorsms: 'Error client${id} no cerrado message.' });
+                            }
+                        } else {
+                            console.log(deletes.resultCli)
+                        }
+                    });
+                } else {
+                    res.json({ result: true, success: 'client${id} Pausado' });
+                }                
+            })
+            .catch((error) => {
+                res.status(500);
+                res.json({ result: false, errorsms: 'Error client${id} no cerrado message: ' + error });
+            });
     } catch (error) {
         res.status(500);
         res.json({ errorsms: error.message, resp: false });
@@ -134,43 +163,55 @@ const newUserWhatsapp = (req, res) => {
         const { id } = req.params
         const nuevo = nuevoEliminar(id, undefined);
 
-        listUsers('client.txt')
-            .then(users => {
+        listClients().then((result) => {
+            if (result.success) {
+                if (result.clients.length > 0) {
+                    console.log('+++ Lista de clientes +++');
 
-                if (users.includes(parseInt(id))) {
-                    console.log("EXISTE")
+                    let validador = false;
+                    result.clients.forEach(element => {
+                        const partes = element.split('-');
+                        const cliente = partes[0];
+
+                        if (id === cliente) {
+                            validador = true;
+                        }
+                    });
+
+                    if (!validador) {
+                        console.log("NUEVO")
+                        const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
+                        if (respuesta) {
+                            createClient(nuevo.id).then((result) => {
+                                console.log(result ? 'Cliente creado exitosamente' : 'Error al crear el cliente');
+                                res.json({ idUW: nuevo.id, cliente: true })
+                            });
+                        } else {
+                            res.status(500);
+                            res.json({ idUW: '00-00-00-00', cliente: false })
+                        }
+                    } else {
+                        res.status(409);
+                        res.json({ idUW: '00-00-00-00', cliente: false })
+                    }
+                    console.log('+ Fin lista de clientes +');
+                } else {
+                    console.log("PRIMERO")
                     const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
                     if (respuesta) {
+                        createClient(nuevo.id).then((result) => {
+                            console.log(result ? 'Cliente creado exitosamente' : 'Error al crear el cliente');
+                        });
                         res.json({ idUW: nuevo.id, cliente: true })
                     } else {
                         res.status(500);
                         res.json({ idUW: '00-00-00-00', cliente: false })
                     }
-                } else {
-                    captureUsers('client.txt', id)
-                        .then(result => {
-                            console.log(result)
-                            if (result) {
-                                console.log("NUEVO")
-                                const respuesta = agregarUser('hojadePrueba.js', nuevo.template);
-                                if (respuesta) {
-                                    res.json({ idUW: nuevo.id, cliente: true })
-                                } else {
-                                    res.status(500);
-                                    res.json({ idUW: '00-00-00-00', cliente: false })
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error(error);
-                            res.json({ errorsms: error })
-                        });
                 }
-
-            })
-            .catch(error => {
-                console.error(error);
-            });
+            } else {
+                console.log('Error al obtener la lista de clientes:', result.error);
+            }
+        });
 
     } catch (error) {
         res.status(500);
@@ -218,8 +259,31 @@ const eliminarCarpetaUserWhatsapp = async (req, res) => {
     }
 };
 
+const consultarclients = async (req, res) => {
+    try {
+        listClients().then((result) => {
+            if (result.success) {
+                if (result.clients.length > 0) {
+                    res.json({ lista: result.clients, respuesta: true })
+                } else {
+                    res.json({ lista: 0, respuesta: true })
+                }
+                console.log("CLientes: " + result.clients.length)
+            } else {
+                res.status(500);
+                res.send({ respuesta: false, errorsms: error.message });
+            }
+        });
+    } catch (error) {
+        res.status(500);
+        res.send({ respuesta: false, errorsms: error.message });
+    }
+};
+
 export const methods = {
+    nuevoEliminar,
     newUserWhatsapp,
+    consultarclients,
     eliminarUserWhatsapp,
     eliminarCarpetaUserWhatsapp
 };
