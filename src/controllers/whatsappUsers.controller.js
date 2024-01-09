@@ -167,25 +167,19 @@ const nuevoEliminar = (id, unico) => {
             console.log('Client${id} desconectado desde: ', reason);
         });
 
-    fs.promises.access('${totalRut}')
-    .then(() => {
-        // El archivo existe, así que intenta eliminarlo
-        return fs.promises.unlink('${totalRut}');
-    })
-    .then(() => {
-        console.log('El archivo ${totalRut} fue eliminado.');
-                
-        client${id}.initialize();
-    })
-    .catch ((error) => {
-    if (error.code === 'ENOENT') {
-        // El archivo no existe, no hay necesidad de eliminarlo
-        console.log('El archivo ${totalRut} no existe.');
-        client${id}.initialize();
-    } else {
-        // Otro error ocurrió durante la verificación o eliminación
-        console.error('Error al verificar o eliminar el archivo ${totalRut}:', error);
-    }
+        fs.unlink(${totalRut})
+        .then(() => {
+          console.log('El archivo ${totalRut} fue eliminado.');
+        })
+        .catch((error) => {
+          if (error.code === 'ENOENT') {
+            // El archivo no existe, no hay necesidad de eliminarlo
+            console.log('El archivo ${totalRut} no existe.');
+          } else {
+            // Otro error ocurrió durante la eliminación
+            console.error('Error al eliminar el archivo ${totalRut}:', error);
+          }
+        });
 });
  `
     return { template: nuevo, id: `${unico}` };
